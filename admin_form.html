@@ -1,0 +1,76 @@
+<!DOCTYPE html>
+<html lang="da">
+<head>
+  <meta charset="UTF-8">
+  <title>Admin - Tilføj data</title>
+</head>
+<body>
+  <h1>Indtast data til infoskærmen</h1>
+
+  <form id="menuForm">
+    <h2>Menu</h2>
+    <label>Morgenmad: <input id="breakfast" name="breakfast" required></label><br>
+    <label>Frokost: <input id="lunch" name="lunch" required></label><br>
+    <label>Aftensmad: <input id="dinner" name="dinner" required></label><br>
+    <button type="submit">Gem menu</button>
+    <div id="menuMessage"></div>
+  </form>
+  <br>
+
+  <form id="aktivitetForm">
+    <h2>Aktiviteter</h2>
+    <label>Kl. 09:00: <input id="activity1" name="activity1" required></label><br>
+    <label>Kl. 11:00: <input id="activity2" name="activity2" required></label><br>
+    <label>Kl. 13:00: <input id="activity3" name="activity3" required></label><br>
+    <label>Kl. 15:00: <input id="activity4" name="activity4" required></label><br>
+    <button type="submit">Gem aktiviteter</button>
+    <div id="aktivitetMessage"></div>
+  </form>
+  <br>
+
+  <button id="tilbage-til-forside">Tilbage til forsiden</button>
+
+  <script>
+document.getElementById('tilbage-til-forside').addEventListener('click', function() {
+    window.location.href = '/';
+});
+
+// Menu-formular
+document.getElementById('menuForm').addEventListener('submit', async function(e) {
+  e.preventDefault();
+  const breakfast = document.getElementById('breakfast').value;
+  const lunch = document.getElementById('lunch').value;
+  const dinner = document.getElementById('dinner').value;
+
+  const response = await fetch('https://export.eduhost.dk:8000/menu', {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ breakfast, lunch, dinner })
+  });
+
+  const result = await response.json();
+  document.getElementById('menuMessage').textContent = result.message || result.error;
+});
+
+// Aktivitets-formular
+document.getElementById('aktivitetForm').addEventListener('submit', async function(e) {
+  e.preventDefault();
+  const activities = [
+    { time: "09:00", name: document.getElementById('activity1').value },
+    { time: "11:00", name: document.getElementById('activity2').value },
+    { time: "13:00", name: document.getElementById('activity3').value },
+    { time: "15:00", name: document.getElementById('activity4').value }
+  ];
+
+  const response = await fetch('https://export.eduhost.dk:8000/aktivitet', {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ activities })
+  });
+
+  const result = await response.json();
+  document.getElementById('aktivitetMessage').textContent = result.message || result.error;
+});
+  </script>
+</body>
+</html>
